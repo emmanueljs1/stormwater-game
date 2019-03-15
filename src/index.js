@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'bootstrap/dist/css/bootstrap.css';
 import './index.css';
 
 class Roof extends React.Component {
@@ -13,16 +14,17 @@ class Roof extends React.Component {
   render() {
     const toggle = () => this.setState({isGreen: !this.state.isGreen})
     const bgColor = this.state.isGreen ? 'green' : 'gray'
-    const w = this.props.width
     const h = this.props.height
 
     return (
-      <button className="roof" onClick={toggle} style={{backgroundColor: bgColor, width: w, height: h}}>
-        {/* TODO add dropdown menu for options */}
+      <button className="col roof" onClick={toggle} style={{backgroundColor: bgColor, height: h, outline: 'none'}}>
       </button>
+      /* TODO: add dropdown menu for options */
     )
   }
 }
+
+/* TODO: add street, sidewalk, grass, lot classes */
 
 class Board extends React.Component {
   render() {
@@ -33,13 +35,13 @@ class Board extends React.Component {
     for (var i = 0; i < numrows; i++) {
       var cols = []
       for (var j = 0; j < numcols; j++) {
-        cols.push(<Roof width={this.props.width / 20} height={this.props.height / 20} />)
+        cols.push(<Roof height={this.props.height / numrows}/>)
       }
-      rows.push(<div>{cols}</div>)
+      rows.push(<div class="row">{cols}</div>)
     }
 
     return (
-      <div className="board" style={{width: this.props.width, height: this.props.height}}>
+      <div className="board" style={{height: this.props.height}}>
         {rows}
       </div>
     );
@@ -50,21 +52,25 @@ class Game extends React.Component {
   render() {
     return (
       <div className="game">
-        <div className="centered">
-          <h2 style={{color: 'white'}}>Stormwater Game {/* TODO: better title */}</h2>
-        </div>
-        <div className="centered">
-          <div className="light-blue game-col">
-            { /* TODO: instructions */ }
-          </div>
-          <Board width={this.props.width} height={this.props.height}/>
-          <div className="light-green game-col">
-            { /* TODO: */ }
+        <div class="row">
+          <div style={{margin: "0 auto"}}>
+            <h2 style={{color: 'white'}}>Stormwater Game{/* TODO: better title */}</h2>
           </div>
         </div>
-        <div className="padding">
+        <div class="row">
+          <div class="col-sm-1"></div>
+          <div class="col-sm-8">
+            <Board height={this.props.height}/>
+          </div>
+          <div class="light-green col-sm-2">
+            Green Stormwater Infrastructure
+            { /* TODO: information on GSI */ }
+          </div>
+          <div class="col-sm-1"></div>
+        </div>
+        <div class="row">
           <div className="light-gray">
-            { /* TODO: legend */ }
+            { /* TODO: legend and instructions */ }
           </div>
         </div>
       </div>
@@ -75,6 +81,6 @@ class Game extends React.Component {
 // ========================================
 
 ReactDOM.render(
-  <Game width={1000} height={500}/>,
+  <Game height={500}/>,
   document.getElementById('root')
 );

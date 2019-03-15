@@ -9,19 +9,9 @@ ol, ul {
 }
 
 .roof {
-  outline: none;
   float: left;
   display: table-cell;
   border: 1px solid #000;
-}
-
-.centered {
-  margin: 0 auto;
-  display: flex;
-}
-
-.light-blue {
-  background-color: #add8e6;
 }
 
 .light-green {
@@ -30,19 +20,6 @@ ol, ul {
 
 .light-gray {
   background-color: #f2f2f2;
-}
-
-.game-col {
-  width: 200px;
-}
-
-.board {
-  margin-left: 5px;
-  margin-right: 5px;
-}
-
-.padding {
-  padding: 5px;
 }
 
 .game {
