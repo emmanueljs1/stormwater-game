@@ -97,7 +97,7 @@ class Board extends React.Component {
         {/* Toolbar */}
         <div class="col-sm-3 light-green">
           <Scroll.Element style={{height: this.props.height, overflow: 'scroll'}}>
-            <div class="margin-top-btm-10">
+            <div class="margin-top-btm-10 margin-left-right-5">
               <Scroll.Element class="margin-top-btm-5">
                 <div class="row">
                   <div class="col center-text">
