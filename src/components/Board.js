@@ -28,6 +28,13 @@ class Board extends React.Component {
     };
   }
 
+  deselectBlock() {
+    this.setState({
+      board: this.state.board,
+      selected: null
+    });
+  }
+
   selectBlock(i, j) {
     const numrows = this.props.numrows;
     this.setState({
@@ -82,7 +89,7 @@ class Board extends React.Component {
                                              greenAlternatives[selected[0]] ;
 
     return (
-      <div class="row">
+      <div class="row margin-left-right-5">
         {/* City Block (Board) */}
         <div class="col-sm-9" style={{height: this.props.height}}>
           {rows}
@@ -97,7 +104,7 @@ class Board extends React.Component {
                     {
                       !selected
                       ?
-                        'Select a rectangle to the left!'
+                        'Select a rectangle from the city block!'
                       :
                         'You have selected a ' + selectedName
                     }
@@ -155,6 +162,11 @@ class Board extends React.Component {
                         </div>
                       </div>
                     </div>
+                    <button type="button"
+                                class="btn btn-danger btn-sm margin-left-right-20 margin-top-btm-5"
+                                onClick={() => this.deselectBlock()}>
+                          Unselect the {selectedName}
+                    </button>
                   </div>
                 :
                   null
