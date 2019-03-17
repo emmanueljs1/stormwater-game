@@ -8,3 +8,8 @@ export let blockColors = {
     grayColor: '#808080'
   }
 };
+
+export let greenAlternatives = {
+  'roof': 'green roof',
+  'sidewalk': 'permeable sidewalk'
+}

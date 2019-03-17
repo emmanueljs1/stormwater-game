@@ -4,7 +4,7 @@ import Board from './Board';
 class Game extends React.Component {
   render() {
     return (
-      <div className="game">
+      <div class="game">
         <div class="row">
           <div style={{margin: "0 auto"}}>
             <h2 style={{color: 'white'}}>Stormwater Game{/* TODO: better title */}</h2>
@@ -18,7 +18,7 @@ class Game extends React.Component {
           <div class="col-sm-1"></div>
         </div>
         <div class="row">
-          <div className="light-gray">
+          <div class="light-gray">
             { /* TODO: legend and instructions */ }
           </div>
         </div>

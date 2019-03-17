@@ -3,10 +3,14 @@ import React from 'react';
 class Block extends React.Component {
   render() {
     const bgColor = this.props.isGreen ? this.props.greenColor : this.props.grayColor;
+    const bordCol = this.props.isSelected ? 'red' : 'black';
     const h = this.props.height;
 
     return (
-      <button className="col button" onClick={this.props.onClick} style={{backgroundColor: bgColor, height: h, outline: 'none'}}></button>
+      <button class="col solid-border no-padding"
+              onClick={this.props.onClick}
+              style={{backgroundColor: bgColor, borderColor: bordCol, height: h, outline: 'none'}}>
+      </button>
     );
   }
 }

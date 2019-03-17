@@ -9,6 +9,7 @@
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-scripts": "2.1.8",
+    "react-scroll": "^1.7.11",
     "typescript": "^3.3.3333"
   },
   "scripts": {
