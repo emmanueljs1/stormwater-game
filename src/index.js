@@ -3,46 +3,110 @@ import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import './index.css';
 
-class Roof extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isGreen: false
-    };
+let blockColors = {
+  'roof': {
+    greenColor: 'green',
+    grayColor: '#505050'
+  },
+  'sidewalk': {
+    greenColor: '#536878',
+    grayColor: '#808080'
   }
+};
 
+class Block extends React.Component {
   render() {
-    const toggle = () => this.setState({isGreen: !this.state.isGreen})
-    const bgColor = this.state.isGreen ? 'green' : 'gray'
-    const h = this.props.height
+    const bgColor = this.props.isGreen ? this.props.greenColor : this.props.grayColor;
+    const h = this.props.height;
 
     return (
-      <button className="col roof" onClick={toggle} style={{backgroundColor: bgColor, height: h, outline: 'none'}}>
-      </button>
-      /* TODO: add dropdown menu for options */
-    )
+      <button className="col button" onClick={this.props.onClick} style={{backgroundColor: bgColor, height: h, outline: 'none'}}></button>
+    );
   }
 }
 
-/* TODO: add street, sidewalk, grass, lot classes */
-
 class Board extends React.Component {
+  constructor(props) {
+    super(props);
+    var board = []
+    const numrows = this.props.numrows;
+    const numcols = this.props.numcols;
+
+    /* TODO: add grass and lot options */
+    for (var i = 0; i < numrows; i++) {
+      for (var j = 0; j < numcols; j++) {
+        if (i === 0 || j === 0 || i === numrows - 1 || j === numcols - 1) {
+          board.push(['sidewalk', false, i, j]);
+        }
+        else {
+          board.push(['roof', false, i, j]);
+        }
+      }
+    }
+
+    this.state = {
+      board: board,
+      selected: null
+    };
+  }
+
+  handleClick(i, j) {
+    const numrows = this.props.numrows;
+    var newboard = this.state.board;
+    newboard[i * numrows + j][1] = !newboard[i * numrows + j][1];
+    this.setState({
+      board: newboard,
+      selected: newboard[i * numrows + j]
+    });
+  }
+
   render() {
-    var rows = []
-    const numrows = 20
-    const numcols = 20
+    var rows = [];
+    const numrows = this.props.numrows;
+    const numcols = this.props.numcols;
 
     for (var i = 0; i < numrows; i++) {
-      var cols = []
+      var cols = [];
       for (var j = 0; j < numcols; j++) {
-        cols.push(<Roof height={this.props.height / numrows}/>)
-      }
-      rows.push(<div class="row">{cols}</div>)
+        let blockinfo = this.state.board[i * numrows + j];
+        let blocktype = blockinfo[0];
+        let row = i;
+        let col = j;
+
+        cols.push(<Block height={this.props.height / numrows}
+                          isGreen={blockinfo[1]}
+                          greenColor={blockColors[blocktype].greenColor}
+                          grayColor={blockColors[blocktype].grayColor}
+                          onClick={() => this.handleClick(row, col)}/>);
+        }
+
+      rows.push(<div class="row">{cols}</div>);
     }
 
     return (
-      <div className="board" style={{height: this.props.height}}>
-        {rows}
+      <div className="row">
+        <div className="col-sm-9" style={{height: this.props.height}}>
+          {rows}
+        </div>
+        <div class="col-sm-3 light-green">
+          <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10" style={{textAlign: 'center'}}>
+              { this.state.selected == null ? 'Select a rectangle to the left!' : 'Options:' }
+            </div>
+            <div class="col-sm-1"></div>
+          </div>
+          <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10">
+            {
+              /* TODO: develop into menu UI for changing selected block into a green infrastructure block */
+              this.state.selected == null ? null : this.state.selected[0]
+            }
+            </div>
+            <div class="col-sm-1"></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -59,12 +123,8 @@ class Game extends React.Component {
         </div>
         <div class="row">
           <div class="col-sm-1"></div>
-          <div class="col-sm-8">
-            <Board height={this.props.height}/>
-          </div>
-          <div class="light-green col-sm-2">
-            Green Stormwater Infrastructure
-            { /* TODO: information on GSI */ }
+          <div class="col-sm-10">
+            <Board height={this.props.height} numrows={20} numcols={20}/>
           </div>
           <div class="col-sm-1"></div>
         </div>

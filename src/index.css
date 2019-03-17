@@ -8,9 +8,8 @@ ol, ul {
   padding-left: 30px;
 }
 
-.roof {
-  float: left;
-  display: table-cell;
+.button {
+  padding: 0px;
   border: 1px solid #000;
 }
 
@@ -20,6 +19,11 @@ ol, ul {
 
 .light-gray {
   background-color: #f2f2f2;
+}
+
+.centered {
+  margin: 0 auto;
+  float: none
 }
 
 .game {
