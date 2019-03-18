@@ -3,7 +3,7 @@ import React from 'react';
 class Instructions extends React.Component {
   render() {
     return (
-      <div class="margin-top-btm-10">
+      <div>
         <div class="row" style={{marginBottom: '10px'}}>
           <div class="col-sm-1"></div>
           <div class="col-sm-10 margin-top-btm-5">
@@ -27,18 +27,23 @@ class Instructions extends React.Component {
               counterpart, a <u>green roof</u>.<br></br><br></br>
               The goal of the game is to change the city block to use as much green infrastructure
               as you can without spending more than a certain budget, depending on if you're 
-              playing on Easy, Medium, or Hard. 
-              { /* TODO: add exact budget */}
+              playing on Easy, Medium, or Hard.
             </p>
           </div>
           <div class="col-sm-1"></div>
         </div>
-        <div class="row">
-          <div class="col-sm-10"></div>
-          <div class="col-sm-2 center-content">
-            <button onClick={this.props.onClick}>Done</button>
-          </div>
-        </div>
+        {
+          this.props.onClick
+          ?
+            <div class="row">
+              <div class="col-sm-10"></div>
+              <div class="col-sm-2 center-content">
+                <button onClick={this.props.onClick}>Done</button>
+              </div>
+            </div>
+          :
+            null
+        }
       </div>
     );
   }
