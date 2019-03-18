@@ -3,7 +3,7 @@ import React from 'react';
 class ChooseDifficulty extends React.Component {
   render() {
     return (
-      <div>
+      <div class="margin-left-right-20">
         <div class="row margin-top-btm-5 center-content">
           <h4 class="center-text">Choose Difficulty</h4>
         </div>

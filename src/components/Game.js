@@ -1,5 +1,5 @@
 import React from 'react';
-import Popup from 'reactjs-popup'
+import Popup from 'reactjs-popup';
 import Board from './Board';
 import Instructions from './Instructions';
 import ChooseDifficulty from './ChooseDifficulty';
