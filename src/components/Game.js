@@ -58,8 +58,8 @@ class Game extends React.Component {
               difficulty
               ?
                 <Board height={this.props.height}
-                       numrows={20}
-                       numcols={20}
+                       numrows={10}
+                       numcols={10}
                        difficulty={difficulty}/>
               :
                 null
@@ -68,7 +68,7 @@ class Game extends React.Component {
           <div class="col-sm-1"></div>
         </div>
         <div class="row center-content margin-top-btm-5">
-            <Popup trigger={<button type="button" class="btn btn-light btn-lg">
+            <Popup trigger={<button type="button" class="btn btn-light btn">
                               Instructions
                             </button>}
                   modal
@@ -77,7 +77,7 @@ class Game extends React.Component {
             </Popup>
           </div>
         <div class="row center-content margin-top-btm-5">
-            <Popup trigger={<button type="button" class="btn btn-light btn-lg">
+            <Popup trigger={<button type="button" class="btn btn-light">
                               Change Difficulty
                             </button>}
                    modal

@@ -1,31 +1,32 @@
 import React from 'react';
 import * as Scroll from 'react-scroll';
 import Block from './Block';
-import { blockColors, greenAlternatives } from '../utils';
+import { blockColors, greenAlternatives, blockstr, blockTypes } from '../utils';
 
 class Board extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      board: this.newBoard(),
+      selected: null
+    };
+  }
+
+  newBoard() {
     var board = [];
     const numrows = this.props.numrows;
     const numcols = this.props.numcols;
 
-    /* TODO: add grass and lot options */
+    var split = blockstr.split(' ');
+
     for (var i = 0; i < numrows; i++) {
       for (var j = 0; j < numcols; j++) {
-        if (i === 0 || j === 0 || i === numrows - 1 || j === numcols - 1) {
-          board.push(['sidewalk', false, i, j]);
-        }
-        else {
-          board.push(['roof', false, i, j]);
-        }
+        board.push([blockTypes[split[numrows * i + j]], false, i, j]);
       }
     }
 
-    this.state = {
-      board: board,
-      selected: null
-    };
+    return board;
   }
 
   deselectBlock() {
@@ -171,6 +172,16 @@ class Board extends React.Component {
                 :
                   null
               }
+              </Scroll.Element>
+              {/* TODO: information on total budget remaining and total money spent */}
+              <Scroll.Element>
+                <div class="row center-content">
+                  <button type="button"
+                          class="btn btn-dark btn-sm margin-left-right-20 margin-top-btm-5"
+                          onClick={() => this.setState({board: this.newBoard(), selected: null})}>
+                    Reset city block
+                  </button>
+                </div>
               </Scroll.Element>
             </div>
           </Scroll.Element>
