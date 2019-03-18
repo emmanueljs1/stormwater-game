@@ -6,7 +6,7 @@ import { blockColors, greenAlternatives } from '../utils';
 class Board extends React.Component {
   constructor(props) {
     super(props);
-    var board = []
+    var board = [];
     const numrows = this.props.numrows;
     const numcols = this.props.numcols;
 
@@ -163,8 +163,8 @@ class Board extends React.Component {
                       </div>
                     </div>
                     <button type="button"
-                                class="btn btn-danger btn-sm margin-left-right-20 margin-top-btm-5"
-                                onClick={() => this.deselectBlock()}>
+                            class="btn btn-danger btn-sm margin-left-right-20 margin-top-btm-5"
+                            onClick={() => this.deselectBlock()}>
                           Unselect the {selectedName}
                     </button>
                   </div>
