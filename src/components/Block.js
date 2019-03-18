@@ -7,7 +7,7 @@ class Block extends React.Component {
     const h = this.props.height;
 
     return (
-      <button class="col solid-border no-padding"
+      <button class="col solid-border padding-0"
               onClick={this.props.onClick}
               style={{backgroundColor: bgColor, borderColor: bordCol, height: h, outline: 'none'}}>
       </button>
