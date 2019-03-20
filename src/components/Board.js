@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Scroll from 'react-scroll';
 import Block from './Block';
-import { blockColors, greenAlternatives, blockstr, blockTypes } from '../utils';
+import { blockColors, greenAlternatives, blockstr, blockTypes, greenDescriptions, greenBenefits, cityBlockSqFt, cost, greenDisadvantages } from '../utils';
 
 class Board extends React.Component {
   constructor(props) {
@@ -89,14 +89,17 @@ class Board extends React.Component {
                                selected[1] ?                    selected[0] :
                                              greenAlternatives[selected[0]] ;
 
+    // sq ft in one block
+    const blockSqFt = Math.round(Math.sqrt(cityBlockSqFt) / numrows);
+
     return (
       <div class="row margin-left-right-5">
         {/* City Block (Board) */}
-        <div class="col-sm-9" style={{height: this.props.height}}>
+        <div class="col-sm-8" style={{height: this.props.height}}>
           {rows}
         </div>
         {/* Toolbar */}
-        <div class="col-sm-3 light-green">
+        <div class="col-sm-4 light-green">
           <Scroll.Element style={{height: this.props.height, overflow: 'scroll'}}>
             <div class="margin-top-btm-10 margin-left-right-5">
               <Scroll.Element class="margin-top-btm-5">
@@ -119,7 +122,7 @@ class Board extends React.Component {
                   {
                     selected
                     ?
-                      <Block height={blockheight}
+                      <Block height={blockheight / 2}
                              isGreen={selected[1]}
                              grayColor={blockColors[selected[0]].grayColor}
                              greenColor={blockColors[selected[0]].greenColor}/>
@@ -149,17 +152,51 @@ class Board extends React.Component {
                         <button type="button"
                                 class="btn btn-primary btn-sm margin-left-right-20"
                                 onClick={() => this.toggleBlock(selected[2], selected[3])}>
-                          Change the {selectedName} to a {selectedAlternative}
+                          Change the {selectedName} {!selected[1] ? 'to' : 'back to'} a {selectedAlternative}
                         </button>
                       </div>
+                      {
+                        !selected[1]
+                        ?
+                          <div>
+                            <div class="row margin-top-btm-5">
+                              <div class="col center-text margin-left-right-5">
+                                <b>Description:</b><br></br>
+                                {greenDescriptions[selectedName]}
+                              </div>
+                            </div>
+                            <div class="row margin-top-btm-5">
+                              <div class="col center-text margin-left-right-5">
+                                <b>Benefits:</b><br></br>
+                                {greenBenefits[selectedName]}
+                              </div>
+                            </div>
+                            <div class="row margin-top-btm-5">
+                              <div class="col center-text margin-left-right-5">
+                                <b>Disadvantages:</b><br></br>
+                                {
+                                  greenDisadvantages[selectedName].map(txt => 
+                                    <div class="row">
+                                      <div class="col center-text">
+                                        - {txt}
+                                      </div>
+                                    </div>
+                                  )
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        :
+                          <div class="row margin-top-btm-5">
+                            <div class="col center-text margin-left-right-5">
+                              You can change this {selectedName} back to save money, or if you decided
+                              the benefits weren't worth it after considering the disadvantages
+                            </div>
+                          </div>
+                      }
                       <div class="row margin-top-btm-5">
                         <div class="col center-text">
-                          {
-                            /* TODO:
-                              information on green/gray option
-                              amount of money saved/spent in getting this option
-                            */
-                          }
+                          <b>{!selected[1] ? 'Cost' : 'Savings'}:</b> ${cost(blockSqFt, selected[0])}
                         </div>
                       </div>
                     </div>
