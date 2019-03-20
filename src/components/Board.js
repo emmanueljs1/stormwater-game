@@ -95,11 +95,11 @@ class Board extends React.Component {
     return (
       <div class="row margin-left-right-5">
         {/* City Block (Board) */}
-        <div class="col-sm-8" style={{height: this.props.height}}>
+        <div class="col-sm-9" style={{height: this.props.height}}>
           {rows}
         </div>
         {/* Toolbar */}
-        <div class="col-sm-4 light-green">
+        <div class="col-sm-3 light-green">
           <Scroll.Element style={{height: this.props.height, overflow: 'scroll'}}>
             <div class="margin-top-btm-10 margin-left-right-5">
               <Scroll.Element class="margin-top-btm-5">
