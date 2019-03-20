@@ -1,7 +1,18 @@
 import React from 'react';
 import * as Scroll from 'react-scroll';
 import Block from './Block';
-import { blockColors, greenAlternatives, blockstr, blockTypes, greenDescriptions, greenBenefits, cityBlockSqFt, cost, greenDisadvantages } from '../utils';
+import {
+  blockColors,
+  blockstr,
+  blockTypes,
+  budget,
+  greenAlternatives,
+  greenBenefits,
+  greenDescriptions,
+  greenDisadvantages,
+  cityBlockSqFt,
+  cost
+} from '../utils';
 
 class Board extends React.Component {
   constructor(props) {
@@ -9,19 +20,19 @@ class Board extends React.Component {
 
     this.state = {
       board: this.newBoard(),
-      selected: null
+      remainingBudget: budget(this.props.difficulty),
     };
   }
 
   newBoard() {
-    var board = [];
+    let board = [];
     const numrows = this.props.numrows;
     const numcols = this.props.numcols;
 
-    var split = blockstr.split(' ');
+    let split = blockstr.split(' ');
 
-    for (var i = 0; i < numrows; i++) {
-      for (var j = 0; j < numcols; j++) {
+    for (let i = 0; i < numrows; i++) {
+      for (let j = 0; j < numcols; j++) {
         board.push([blockTypes[split[numrows * i + j]], false, i, j]);
       }
     }
@@ -31,7 +42,6 @@ class Board extends React.Component {
 
   deselectBlock() {
     this.setState({
-      board: this.state.board,
       selected: null
     });
   }
@@ -39,36 +49,54 @@ class Board extends React.Component {
   selectBlock(i, j) {
     const numrows = this.props.numrows;
     this.setState({
-      board: this.state.board,
       selected: this.state.board[i * numrows + j]
     });
   }
 
   toggleBlock(i, j) {
     const numrows = this.props.numrows;
-    var newBoard = this.state.board;
-    newBoard[i * numrows + j][1] = !newBoard[i * numrows + j][1];
+    const blockSqFt = Math.round(Math.sqrt(cityBlockSqFt) / numrows);
+    const remainingBudget = this.state.remainingBudget;
+
+    let newBoard = this.state.board;
+    newBoard[i * numrows + j][1] = !newBoard[i * numrows + j][1]; // toggle isGreen
+
+    const block = newBoard[i * numrows + j];
+    // TODO: dont do this if remaining budget will be negative
+    const newRemainingBudget = remainingBudget + (block[1] ? -1 : 1) * cost(blockSqFt, block[0]);
+
     this.setState({
       board: newBoard,
-      selected: this.state.selected
+      remainingBudget: newRemainingBudget,
     });
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.difficulty !== this.props.difficulty) {
+      this.setState({
+        remainingBudget: budget(nextProps.difficulty),
+      });
+    }
+  }
+
   render() {
-    var rows = [];
     const numrows = this.props.numrows;
     const numcols = this.props.numcols;
     const selected = this.state.selected;
+    const remainingBudget = this.state.remainingBudget;
     const blockheight = this.props.height / numrows;
+    const blockSqFt = Math.round(Math.sqrt(cityBlockSqFt) / numrows);
 
-    for (var i = 0; i < numrows; i++) {
-      var cols = [];
-      for (var j = 0; j < numcols; j++) {
-        let blockinfo = this.state.board[i * numrows + j];
-        let blocktype = blockinfo[0];
-        let row = i;
-        let col = j;
-        let isSelected = selected && selected[2] === row && selected[3] === col;
+    let rows = [];
+
+    for (let i = 0; i < numrows; i++) {
+      let cols = [];
+      for (let j = 0; j < numcols; j++) {
+        const blockinfo = this.state.board[i * numrows + j];
+        const blocktype = blockinfo[0];
+        const row = i;
+        const col = j;
+        const isSelected = selected && selected[2] === row && selected[3] === col;
 
         cols.push(<Block height={blockheight}
                          isGreen={blockinfo[1]}
@@ -81,147 +109,167 @@ class Board extends React.Component {
       rows.push(<div class="row">{cols}</div>);
     }
 
-    let selectedName = !selected    ?                           null :
-                       !selected[1] ?                    selected[0] :
-                                      greenAlternatives[selected[0]] ;
+    const selectedIsGreen = !selected ? null : selected[1];
 
-    let selectedAlternative = !selected    ?                           null :
-                               selected[1] ?                    selected[0] :
-                                             greenAlternatives[selected[0]] ;
+    const selectedName = !selected        ?                           null :
+                         !selectedIsGreen ?                    selected[0] :
+                                            greenAlternatives[selected[0]] ;
 
-    // sq ft in one block
-    const blockSqFt = Math.round(Math.sqrt(cityBlockSqFt) / numrows);
+    const selectedAlternative = !selected        ?                           null :
+                                 selectedIsGreen ?                    selected[0] :
+                                                   greenAlternatives[selected[0]] ;
 
     return (
-      <div class="row margin-left-right-5">
-        {/* City Block (Board) */}
-        <div class="col-sm-9" style={{height: this.props.height}}>
-          {rows}
+      <div>
+        <div class="row margin-left-right-5 light-gray">
+          <div class="col-sm-4 center-text">
+            <b>Difficulty:</b> {this.props.difficulty.toUpperCase()}
+          </div>
+          <div class="col-sm-4 center-text">
+            {/* TODO: add stormwater collected calculation */}
+            <b>Stormwater Collected:</b> {null}%
+          </div>
+          <div class="col-sm-4 center-text">
+            <b>Remaining Money:</b> ${remainingBudget}
+          </div>
         </div>
-        {/* Toolbar */}
-        <div class="col-sm-3 light-green">
-          <Scroll.Element style={{height: this.props.height, overflow: 'scroll'}}>
-            <div class="margin-top-btm-10 margin-left-right-5">
-              <Scroll.Element class="margin-top-btm-5">
-                <div class="row">
-                  <div class="col center-text">
-                    {
-                      !selected
-                      ?
-                        'Select a rectangle from the city block!'
-                      :
-                        'You have selected a ' + selectedName
-                    }
-                  </div>
-                </div>
-              </Scroll.Element>
-              <Scroll.Element class="margin-top-btm-5">
-                <div class="row">
-                  <div class="col-sm-4"></div>
-                  <div class="col-sm-4">
-                  {
-                    selected
-                    ?
-                      <Block height={blockheight / 2}
-                             isGreen={selected[1]}
-                             grayColor={blockColors[selected[0]].grayColor}
-                             greenColor={blockColors[selected[0]].greenColor}/>
-                    :
-                      null
-                  }
-                  </div>
-                  <div class="col-sm-4"></div>
-                </div>
-              </Scroll.Element>
-              <Scroll.Element class="margin-top-btm-5">
-                <div class="row">
-                  <div class="col center-text">
-                    {
-                      selected ? 'These are your options for a ' + selectedName + ':' : null
-                    }
-                  </div>
-                </div>
-              </Scroll.Element>
-              <Scroll.Element class="margin-top-btm-5">
-              {
-                selected
-                ?
-                  <div class="row center-content margin-left-right-5">
-                    <div class="solid-border">
-                      <div class="row center-content margin-top-btm-5">
-                        <button type="button"
-                                class="btn btn-primary btn-sm margin-left-right-20"
-                                onClick={() => this.toggleBlock(selected[2], selected[3])}>
-                          Change the {selectedName} {!selected[1] ? 'to' : 'back to'} a {selectedAlternative}
-                        </button>
-                      </div>
+        <div class="row margin-left-right-5">
+          {/* City Block (Board) */}
+          <div class="col-sm-9" style={{height: this.props.height}}>
+            {rows}
+          </div>
+          {/* Toolbar */}
+          <div class="col-sm-3 light-green">
+            <Scroll.Element style={{height: this.props.height, overflow: 'scroll'}}>
+              <div class="margin-top-btm-10 margin-left-right-5">
+                <Scroll.Element class="margin-top-btm-5">
+                  <div class="row">
+                    <div class="col center-text">
                       {
-                        !selected[1]
+                        !selected
                         ?
-                          <div>
-                            <div class="row margin-top-btm-5">
-                              <div class="col center-text margin-left-right-5">
-                                <b>Description:</b><br></br>
-                                {greenDescriptions[selectedName]}
-                              </div>
-                            </div>
-                            <div class="row margin-top-btm-5">
-                              <div class="col center-text margin-left-right-5">
-                                <b>Benefits:</b><br></br>
-                                {greenBenefits[selectedName]}
-                              </div>
-                            </div>
-                            <div class="row margin-top-btm-5">
-                              <div class="col center-text margin-left-right-5">
-                                <b>Disadvantages:</b><br></br>
-                                {
-                                  greenDisadvantages[selectedName].map(txt => 
-                                    <div class="row">
-                                      <div class="col center-text">
-                                        - {txt}
-                                      </div>
-                                    </div>
-                                  )
-                                }
-                              </div>
-                            </div>
-                          </div>
+                          'Select a rectangle from the city block!'
                         :
-                          <div class="row margin-top-btm-5">
-                            <div class="col center-text margin-left-right-5">
-                              You can change this {selectedName} back to save money, or if you decided
-                              the benefits weren't worth it after considering the disadvantages
-                            </div>
-                          </div>
+                          'You have selected a ' + selectedName
                       }
-                      <div class="row margin-top-btm-5">
-                        <div class="col center-text">
-                          <b>{!selected[1] ? 'Cost' : 'Savings'}:</b> ${cost(blockSqFt, selected[0])}
+                    </div>
+                  </div>
+                </Scroll.Element>
+                <Scroll.Element class="margin-top-btm-5">
+                  <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-4">
+                    {
+                      selected
+                      ?
+                        <Block height={blockheight / 2}
+                               isGreen={selectedIsGreen}
+                               grayColor={blockColors[selected[0]].grayColor}
+                               greenColor={blockColors[selected[0]].greenColor}/>
+                      :
+                        null
+                    }
+                    </div>
+                    <div class="col-sm-4"></div>
+                  </div>
+                </Scroll.Element>
+                <Scroll.Element class="margin-top-btm-5">
+                  <div class="row">
+                    <div class="col center-text">
+                      {
+                        selected ? 'These are your options for a ' + selectedName + ':' : null
+                      }
+                    </div>
+                  </div>
+                </Scroll.Element>
+                <Scroll.Element class="margin-top-btm-5">
+                {
+                  selected
+                  ?
+                    <div class="row center-content margin-left-right-5">
+                      <div class="solid-border">
+                        <div class="row center-content margin-top-btm-5">
+                          <button type="button"
+                                  class="btn btn-primary btn-sm margin-left-right-20"
+                                  onClick={() => this.toggleBlock(selected[2], selected[3])}>
+                            Change the {selectedName} {!selectedIsGreen ? 'to' : 'back to'} a {selectedAlternative}
+                          </button>
+                        </div>
+                        {
+                          !selectedIsGreen
+                          ?
+                            <div>
+                              <div class="row margin-top-btm-5">
+                                <div class="col center-text margin-left-right-5">
+                                  <b>Description:</b><br></br>
+                                  {greenDescriptions[selectedName]}
+                                </div>
+                              </div>
+                              <div class="row margin-top-btm-5">
+                                <div class="col center-text margin-left-right-5">
+                                  <b>Benefits:</b><br></br>
+                                  {greenBenefits[selectedName]}
+                                </div>
+                              </div>
+                              <div class="row margin-top-btm-5">
+                                <div class="col center-text margin-left-right-5">
+                                  <b>Disadvantages:</b><br></br>
+                                  {
+                                    greenDisadvantages[selectedName].map(txt =>
+                                      <div class="row">
+                                        <div class="col center-text">
+                                          - {txt}
+                                        </div>
+                                      </div>
+                                    )
+                                  }
+                                </div>
+                              </div>
+                            </div>
+                          :
+                            <div class="row margin-top-btm-5">
+                              <div class="col center-text margin-left-right-5">
+                                You can change this {selectedName} back to save money, or if you 
+                                decided the benefits weren't worth it after considering the 
+                                disadvantages
+                              </div>
+                            </div>
+                        }
+                        <div class="row margin-top-btm-5">
+                          <div class="col center-text">
+                            <b>{!selectedIsGreen ? 'Cost' : 'Savings'}: </b>
+                            ${cost(blockSqFt, selected[0])}
+                          </div>
                         </div>
                       </div>
+                      <button type="button"
+                              class="btn btn-danger btn-sm margin-left-right-20 margin-top-btm-5"
+                              onClick={() => this.deselectBlock()}>
+                        Unselect the {selectedName}
+                      </button>
                     </div>
+                  :
+                    null
+                }
+                </Scroll.Element>
+                <Scroll.Element>
+                  <div class="row center-content">
                     <button type="button"
-                            class="btn btn-danger btn-sm margin-left-right-20 margin-top-btm-5"
-                            onClick={() => this.deselectBlock()}>
-                          Unselect the {selectedName}
+                            class="btn btn-dark btn-sm margin-left-right-20 margin-top-btm-5"
+                            onClick={() =>
+                              this.setState({
+                                board: this.newBoard(),
+                                remainingBudget: budget(this.props.difficulty),
+                                selected: null
+                              })
+                            }>
+                      Reset city block
                     </button>
                   </div>
-                :
-                  null
-              }
-              </Scroll.Element>
-              {/* TODO: information on total budget remaining and total money spent */}
-              <Scroll.Element>
-                <div class="row center-content">
-                  <button type="button"
-                          class="btn btn-dark btn-sm margin-left-right-20 margin-top-btm-5"
-                          onClick={() => this.setState({board: this.newBoard(), selected: null})}>
-                    Reset city block
-                  </button>
-                </div>
-              </Scroll.Element>
-            </div>
-          </Scroll.Element>
+                </Scroll.Element>
+              </div>
+            </Scroll.Element>
+          </div>
         </div>
       </div>
     );

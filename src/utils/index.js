@@ -61,4 +61,16 @@ export function cost(sqft, blocktype) {
   return greenUnitCosts[blocktype] * sqft;
 }
 
+export function budget(difficulty) {
+  if (difficulty === 'easy') {
+    return 100000;
+  }
+  else if (difficulty === 'medium') {
+    return 50000;
+  }
+  else {
+    return 25000;
+  }
+}
+
 export let blockstr = 's s s s s s s s s s s r r l r r l r r s s r r l r r l r r s s l l l l l l r r s s l l l l l l r r s s g g l l l l r r s s g g l l l l r r s s r r l r r l r r s s r r l r r l r r s s s s s s s s s s s'
