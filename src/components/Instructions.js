@@ -5,7 +5,6 @@ import { isMobile, MobileView } from 'react-device-detect';
 class Instructions extends React.Component {
   render() {
     let infoHeight = isMobile ? '100px' : null;
-    // let 
 
     return (
       <div class='margin-left-right-20'>
