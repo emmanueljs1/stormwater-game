@@ -58,16 +58,22 @@ class Board extends React.Component {
     const blockSqFt = Math.round(Math.sqrt(cityBlockSqFt) / numrows);
     const remainingBudget = this.state.remainingBudget;
 
-    let newBoard = this.state.board;
-    newBoard[i * numrows + j][1] = !newBoard[i * numrows + j][1]; // toggle isGreen
+    const block = this.state.board[i * numrows + j];
 
-    const block = newBoard[i * numrows + j];
-    // TODO: dont do this if remaining budget will be negative
-    const newRemainingBudget = remainingBudget + (block[1] ? -1 : 1) * cost(blockSqFt, block[0]);
+    let newRemainingBudget = remainingBudget + (block[1] ? 1 : -1) * cost(blockSqFt, block[0]);
+    let newBoard = this.state.board;
+
+    if (newRemainingBudget >= 0) {
+      newBoard[i * numrows + j][1] = !newBoard[i * numrows + j][1]; // toggle isGreen
+    }
+    else {
+      newRemainingBudget = remainingBudget;
+    }
 
     this.setState({
       board: newBoard,
       remainingBudget: newRemainingBudget,
+      selected: null
     });
   }
 
@@ -88,6 +94,7 @@ class Board extends React.Component {
     const blockSqFt = Math.round(Math.sqrt(cityBlockSqFt) / numrows);
 
     let rows = [];
+    let absorbedStormwater = 0;
 
     for (let i = 0; i < numrows; i++) {
       let cols = [];
@@ -104,7 +111,11 @@ class Board extends React.Component {
                          greenColor={blockColors[blocktype].greenColor}
                          grayColor={blockColors[blocktype].grayColor}
                          onClick={() => this.selectBlock(row, col)}/>);
+
+        if (blockinfo[1] || blockinfo[0] === 'plot of grass') {
+          absorbedStormwater += (1 / (numrows * numcols))
         }
+      }
 
       rows.push(<div class="row">{cols}</div>);
     }
@@ -119,6 +130,8 @@ class Board extends React.Component {
                                  selectedIsGreen ?                    selected[0] :
                                                    greenAlternatives[selected[0]] ;
 
+    const hasEnoughMoney = !selected ? null : (remainingBudget + (selectedIsGreen ? 1 : -1) * cost(blockSqFt, selected[0])) >= 0;
+
     return (
       <div>
         <div class="row margin-left-right-5 light-gray">
@@ -126,8 +139,7 @@ class Board extends React.Component {
             <b>Difficulty:</b> {this.props.difficulty.toUpperCase()}
           </div>
           <div class="col-sm-4 center-text">
-            {/* TODO: add stormwater collected calculation */}
-            <b>Stormwater Collected:</b> {null}%
+            <b>Stormwater Absorbed:</b> {Math.round(100 * absorbedStormwater)}%
           </div>
           <div class="col-sm-4 center-text">
             <b>Remaining Money:</b> ${remainingBudget}
@@ -177,70 +189,96 @@ class Board extends React.Component {
                   <div class="row">
                     <div class="col center-text">
                       {
-                        selected ? 'These are your options for a ' + selectedName + ':' : null
+                        selected
+                        ?
+                          selectedAlternative
+                          ?
+                            'These are your options for a ' + selectedName + ':'
+                          :
+                            "Your selection already absorbs stormwater, so there's no need to change it!"
+                        :
+                          null
                       }
                     </div>
                   </div>
                 </Scroll.Element>
                 <Scroll.Element class="margin-top-btm-5">
                 {
-                  selected
+                  selected && selectedAlternative
                   ?
                     <div class="row center-content margin-left-right-5">
                       <div class="solid-border">
-                        <div class="row center-content margin-top-btm-5">
-                          <button type="button"
-                                  class="btn btn-primary btn-sm margin-left-right-20"
-                                  onClick={() => this.toggleBlock(selected[2], selected[3])}>
-                            Change the {selectedName} {!selectedIsGreen ? 'to' : 'back to'} a {selectedAlternative}
-                          </button>
-                        </div>
-                        {
-                          !selectedIsGreen
-                          ?
-                            <div>
-                              <div class="row margin-top-btm-5">
-                                <div class="col center-text margin-left-right-5">
-                                  <b>Description:</b><br></br>
-                                  {greenDescriptions[selectedName]}
-                                </div>
-                              </div>
-                              <div class="row margin-top-btm-5">
-                                <div class="col center-text margin-left-right-5">
-                                  <b>Benefits:</b><br></br>
-                                  {greenBenefits[selectedName]}
-                                </div>
-                              </div>
-                              <div class="row margin-top-btm-5">
-                                <div class="col center-text margin-left-right-5">
-                                  <b>Disadvantages:</b><br></br>
-                                  {
-                                    greenDisadvantages[selectedName].map(txt =>
-                                      <div class="row">
-                                        <div class="col center-text">
-                                          - {txt}
-                                        </div>
-                                      </div>
-                                    )
-                                  }
-                                </div>
-                              </div>
+                      {
+                        hasEnoughMoney
+                        ?
+                          <div>
+                            <div class="row center-content margin-top-btm-5">
+                              <button type="button"
+                                      class="btn btn-primary btn-sm margin-left-right-20"
+                                      onClick={() => this.toggleBlock(selected[2], selected[3])}>
+                                Change the {selectedName} {!selectedIsGreen ? 'to' : 'back to'} a {selectedAlternative}
+                              </button>
                             </div>
-                          :
+                            {
+                              !selectedIsGreen
+                              ?
+                                <div>
+                                  <div class="row margin-top-btm-5">
+                                    <div class="col center-text margin-left-right-5">
+                                      <b>Description:</b><br></br>
+                                      {greenDescriptions[selectedName]}
+                                    </div>
+                                  </div>
+                                  <div class="row margin-top-btm-5">
+                                    <div class="col center-text margin-left-right-5">
+                                      <b>Benefits:</b><br></br>
+                                      {
+                                        greenBenefits[selectedName].map(txt =>
+                                          <div class="row">
+                                            <div class="col center-text">
+                                              - {txt}
+                                            </div>
+                                          </div>
+                                        )
+                                      }
+                                    </div>
+                                  </div>
+                                  <div class="row margin-top-btm-5">
+                                    <div class="col center-text margin-left-right-5">
+                                      <b>Disadvantages:</b><br></br>
+                                      {
+                                        greenDisadvantages[selectedName].map(txt =>
+                                          <div class="row">
+                                            <div class="col center-text">
+                                              - {txt}
+                                            </div>
+                                          </div>
+                                        )
+                                      }
+                                    </div>
+                                  </div>
+                                </div>
+                              :
+                                <div class="row margin-top-btm-5">
+                                  <div class="col center-text margin-left-right-5">
+                                    You can change this {selectedName} back to save money, or if you 
+                                    decided the benefits weren't worth it after considering the 
+                                    disadvantages
+                                  </div>
+                                </div>
+                            }
                             <div class="row margin-top-btm-5">
-                              <div class="col center-text margin-left-right-5">
-                                You can change this {selectedName} back to save money, or if you 
-                                decided the benefits weren't worth it after considering the 
-                                disadvantages
+                              <div class="col center-text">
+                                <b>{!selectedIsGreen ? 'Cost' : 'Savings'}: </b>
+                                ${cost(blockSqFt, selected[0])}
                               </div>
                             </div>
-                        }
-                        <div class="row margin-top-btm-5">
-                          <div class="col center-text">
-                            <b>{!selectedIsGreen ? 'Cost' : 'Savings'}: </b>
-                            ${cost(blockSqFt, selected[0])}
                           </div>
-                        </div>
+                        :
+                          <div class="row center-text margin-top-btm-5 margin-left-right-5">
+                            You don't have enough money to change the {selectedName} to a {selectedAlternative}
+                          </div>
+                      }
                       </div>
                       <button type="button"
                               class="btn btn-danger btn-sm margin-left-right-20 margin-top-btm-5"
@@ -270,6 +308,12 @@ class Board extends React.Component {
               </div>
             </Scroll.Element>
           </div>
+        </div>
+        <div class="row margin-left-right-5 center-content margin-top-btm-5">
+          <button type="button"
+                  class="btn btn-success centered">
+            Finish and get your results!
+          </button>
         </div>
       </div>
     );

@@ -29,6 +29,14 @@ ol, ul {
   float: none;
 }
 
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
 .padding-20 {
   padding: 20px;
 }
