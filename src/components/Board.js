@@ -312,6 +312,7 @@ class Board extends React.Component {
         <div class="row margin-left-right-5 center-content margin-top-btm-5">
           <button type="button"
                   class="btn btn-success centered">
+            {/* TODO: win logic */}
             Finish and get your results!
           </button>
         </div>
