@@ -53,7 +53,7 @@ class Board extends React.Component {
     const numrows = this.props.numrows;
     const numcols = this.props.numcols;
 
-    let seen = new Map();
+    let seen = {};
 
     let searchForParking = (row, col) => {
       if (seen[row]) {
@@ -107,11 +107,10 @@ class Board extends React.Component {
     const numcols = this.props.numcols;
     const remainingBudget = this.state.remainingBudget;
 
-    let finalScore = 0;
-    let advantages = new Set();
-    let disadvantages = new Set();
+    let pointAdjustments = new Map();
     let stormwaterAbsorbed = 0;
     let hasParkingSpace = false;
+    let expensiveOptionsUsed = 0
 
     for (let i = 0; i < numrows; i++) {
       for (let j = 0; j < numcols; j++) {
@@ -120,20 +119,14 @@ class Board extends React.Component {
         const isGreen = blockinfo[1];
 
         if (isGreen || blocktype === 'plot of grass') {
-          finalScore += (1 / (numrows * numcols));
           stormwaterAbsorbed += (1 / (numrows * numcols));
 
           if (greenBenefits[blocktype].includes('Nice area for community')) {
-            finalScore += (1 / (numrows * numcols));
-            advantages.add('Added a nice area for the community');
+            pointAdjustments.set('Added a nice area for the community', 5);
           }
           if (greenDisadvantages[blocktype].includes('Expensive')) {
-            disadvantages.add('Used some expensive options');
+            expensiveOptionsUsed += 1;
           }
-        }
-
-        if (isGreen) {
-          disadvantages.add('Have to take some time to construct the GSI');
         }
 
         if (blocktype === 'lot') {
@@ -142,29 +135,33 @@ class Board extends React.Component {
       }
     }
 
+    if (expensiveOptionsUsed > 0) {
+      pointAdjustments.set(`Used an expensive option on ${expensiveOptionsUsed} tile(s)`, -1 * expensiveOptionsUsed);
+    }
+
     if (hasParkingSpace) {
       if (!this.checkForPathFromSidewalkToParking()) {
-        disadvantages.add("Took away all routes from the street to the parking space")
-        finalScore -= 5 * (1 / (numrows * numcols));
+        pointAdjustments.set("Took away all routes from the street to the parking space", -25);
       }
     }
     else {
-      disadvantages.add("Took away all of the block's parking space")
-      finalScore -= 5 * (1 / (numrows * numcols));
-    }
-
-    if (stormwaterAbsorbed > 0.04) {
-      advantages.add("Absorbed more of the block's stormwater");
-    }
-    else {
-      disadvantages.add("Did not absorb any more of the block's stormwater");
+      pointAdjustments.set("Took away all of the block's parking space", -20);
     }
 
     if (remainingBudget > budget(this.props.difficulty) * 0.5) {
-      advantages.add('Spent less than half of your budget!')
+      pointAdjustments.set('Spent less than half of your budget!', 5);
     }
 
-    return [finalScore, [...advantages], [...disadvantages]];
+    let finalScore = Math.round(stormwaterAbsorbed * 100);
+
+    pointAdjustments.forEach( (value) => {
+      finalScore += value
+    });
+
+    return {
+      finalScore: finalScore, 
+      pointAdjustments: pointAdjustments
+    };
   }
 
   deselectBlock() {
@@ -442,23 +439,15 @@ class Board extends React.Component {
                      closeOnDocumentClick>
                 { close => (
                   <div class="center-content center-text margin-left-right-5 margin-top-btm-5">
-                    <h3>Your Score: {Math.round(potentialResult[0] * 100)}%</h3>
-                    <h3>Pros:</h3>
-                    { potentialResult[1].map(txt => 
-                        <div class="row margin-left-right-5">
-                          <div class="col center-text">
-                            - {txt}
-                          </div>
-                        </div>
-                      )
-                    }
-                    <h3>Cons:</h3>
-                    { potentialResult[2].map(txt => 
-                        <div class="row margin-left-right-5">
-                          <div class="col center-text">
-                            - {txt}
-                          </div>
-                        </div>
+                    <h3>Your Score: {potentialResult.finalScore}%</h3>
+                    <h5 style={{color: "green"}}>
+                      Stormwater Absorbed: {Math.round(100 * absorbedStormwater)}%
+                    </h5>
+                    {
+                      Array.from(potentialResult.pointAdjustments).map(([key,value]) =>
+                        <h5 style={{color: value > 0 ? "green" : "red"}}>
+                          {key}: {value}%
+                        </h5>
                       )
                     }
                     <div class="row margin-top-btm-5 margin-left-right-5">
