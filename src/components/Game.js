@@ -55,7 +55,7 @@ class Game extends React.Component {
           <div class="col-sm-1"></div>
           <div class="col-sm-4">
             <div class="row center-content margin-top-btm-5">
-              <Popup trigger={<button type="button" class="btn btn-light">
+              <Popup trigger={<button type="button" class="btn btn-light btn-sm">
                                 Change Difficulty
                               </button>}
                      modal
@@ -63,7 +63,9 @@ class Game extends React.Component {
                 { close => (
                   <ChooseDifficulty chooseEasy={() => this.chooseDifficulty('easy', close)}
                                     chooseMedium={() => this.chooseDifficulty('medium', close)}
-                                    chooseHard={() => this.chooseDifficulty('hard', close)}/>
+                                    chooseHard={() => this.chooseDifficulty('hard', close)}
+                                    close={close}
+                                    withWarning/>
                 )}
               </Popup>
             </div>
@@ -71,7 +73,7 @@ class Game extends React.Component {
           <div class="col-sm-2"></div>
           <div class="col-sm-4">
             <div class="row center-content margin-top-btm-5">
-              <Popup trigger={<button type="button" class="btn btn-light btn">
+              <Popup trigger={<button type="button" class="btn btn-light btn-sm">
                                   Instructions
                                 </button>}
                       modal

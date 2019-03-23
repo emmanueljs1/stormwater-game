@@ -1,5 +1,6 @@
 import React from 'react';
 import * as Scroll from 'react-scroll';
+import Popup from 'reactjs-popup';
 import Block from './Block';
 import {
   blockColors,
@@ -38,6 +39,132 @@ class Board extends React.Component {
     }
 
     return board;
+  }
+
+  reset() {
+    this.setState({
+      board: this.newBoard(),
+      remainingBudget: budget(this.props.difficulty),
+      selected: null
+    });
+  }
+
+  checkForPathFromSidewalkToParking() {
+    const numrows = this.props.numrows;
+    const numcols = this.props.numcols;
+
+    let seen = new Map();
+
+    let searchForParking = (row, col) => {
+      if (seen[row]) {
+        seen[row].add(col);
+      }
+      else {
+        seen[row] = new Set([col]);
+      }
+      let pathFound = false;
+
+      for (let i = Math.max(0, row - 1); i < Math.min(numrows, row + 2); i++) {
+        for (let j = Math.max(0, col - 1); j < Math.min(numcols, col + 2); j++) {
+          if (!seen[i] || !seen[i].has(j)) {
+            const blockinfo = this.state.board[i * numrows + j];
+            const isGreen = blockinfo[1];
+            const blocktype = blockinfo[0];
+
+            if (blocktype === 'alley' && !isGreen) {
+              pathFound = pathFound || searchForParking(i, j)
+            }
+            if (blocktype === 'lot') {
+              return true;
+            }
+          }
+        }
+      }
+
+      return pathFound;
+    };
+
+    for (let i = 0; i < numrows; i++) {
+      for (let j = 0; j < numcols; j++) {
+        const blockinfo = this.state.board[i * numrows + j];
+        const blocktype = blockinfo[0];
+        const row = i;
+        const col = j;
+        
+        if (blocktype === 'sidewalk') {
+          if (searchForParking(row, col)) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  calculateResult() {
+    const numrows = this.props.numrows;
+    const numcols = this.props.numcols;
+    const remainingBudget = this.state.remainingBudget;
+
+    let finalScore = 0;
+    let advantages = new Set();
+    let disadvantages = new Set();
+    let stormwaterAbsorbed = 0;
+    let hasParkingSpace = false;
+
+    for (let i = 0; i < numrows; i++) {
+      for (let j = 0; j < numcols; j++) {
+        const blockinfo = this.state.board[i * numrows + j];
+        const blocktype = blockinfo[0];
+        const isGreen = blockinfo[1];
+
+        if (isGreen || blocktype === 'plot of grass') {
+          finalScore += (1 / (numrows * numcols));
+          stormwaterAbsorbed += (1 / (numrows * numcols));
+
+          if (greenBenefits[blocktype].includes('Nice area for community')) {
+            finalScore += (1 / (numrows * numcols));
+            advantages.add('Added a nice area for the community');
+          }
+          if (greenDisadvantages[blocktype].includes('Expensive')) {
+            disadvantages.add('Used some expensive options');
+          }
+        }
+
+        if (isGreen) {
+          disadvantages.add('Have to take some time to construct the GSI');
+        }
+
+        if (blocktype === 'lot') {
+          hasParkingSpace = true;
+        }
+      }
+    }
+
+    if (hasParkingSpace) {
+      if (!this.checkForPathFromSidewalkToParking()) {
+        disadvantages.add("Took away all routes from the street to the parking space")
+        finalScore -= 5 * (1 / (numrows * numcols));
+      }
+    }
+    else {
+      disadvantages.add("Took away all of the block's parking space")
+      finalScore -= 5 * (1 / (numrows * numcols));
+    }
+
+    if (stormwaterAbsorbed > 0.04) {
+      advantages.add("Absorbed more of the block's stormwater");
+    }
+    else {
+      disadvantages.add("Did not absorb any more of the block's stormwater");
+    }
+
+    if (remainingBudget > budget(this.props.difficulty) * 0.5) {
+      advantages.add('Spent less than half of your budget!')
+    }
+
+    return [finalScore, [...advantages], [...disadvantages]];
   }
 
   deselectBlock() {
@@ -81,6 +208,7 @@ class Board extends React.Component {
     if (nextProps.difficulty !== this.props.difficulty) {
       this.setState({
         remainingBudget: budget(nextProps.difficulty),
+        board: this.newBoard()
       });
     }
   }
@@ -131,6 +259,8 @@ class Board extends React.Component {
                                                    greenAlternatives[selected[0]] ;
 
     const hasEnoughMoney = !selected ? null : (remainingBudget + (selectedIsGreen ? 1 : -1) * cost(blockSqFt, selected[0])) >= 0;
+
+    const potentialResult = this.calculateResult();
 
     return (
       <div>
@@ -294,13 +424,7 @@ class Board extends React.Component {
                   <div class="row center-content">
                     <button type="button"
                             class="btn btn-dark btn-sm margin-left-right-20 margin-top-btm-5"
-                            onClick={() =>
-                              this.setState({
-                                board: this.newBoard(),
-                                remainingBudget: budget(this.props.difficulty),
-                                selected: null
-                              })
-                            }>
+                            onClick={() => this.reset()}>
                       Reset city block
                     </button>
                   </div>
@@ -309,12 +433,46 @@ class Board extends React.Component {
             </Scroll.Element>
           </div>
         </div>
-        <div class="row margin-left-right-5 center-content margin-top-btm-5">
-          <button type="button"
-                  class="btn btn-success centered">
-            {/* TODO: win logic */}
-            Finish and get your results!
-          </button>
+        <div class="row center-content margin-left-right-5 margin-top-btm-5">
+              <Popup trigger={<button type="button" class="btn btn-success centered">
+                                Finish and get your results!
+                              </button>}
+                     onClose={() => this.reset()}
+                     modal
+                     closeOnDocumentClick>
+                { close => (
+                  <div class="center-content center-text margin-left-right-5 margin-top-btm-5">
+                    <h3>Your Score: {Math.round(potentialResult[0] * 100)}%</h3>
+                    <h3>Pros:</h3>
+                    { potentialResult[1].map(txt => 
+                        <div class="row margin-left-right-5">
+                          <div class="col center-text">
+                            - {txt}
+                          </div>
+                        </div>
+                      )
+                    }
+                    <h3>Cons:</h3>
+                    { potentialResult[2].map(txt => 
+                        <div class="row margin-left-right-5">
+                          <div class="col center-text">
+                            - {txt}
+                          </div>
+                        </div>
+                      )
+                    }
+                    <div class="row margin-top-btm-5 margin-left-right-5">
+                      <div class="col center-content">
+                        <button type="button" 
+                                class="btn btn-dark centered"
+                                onClick={() => close()}>
+                          Try Again
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </Popup>
         </div>
       </div>
     );

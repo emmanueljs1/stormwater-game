@@ -46,15 +46,17 @@ export let greenDescriptions = {
 export let greenBenefits = {
   'roof': ['Absorbs all stormwater that falls on it', 'Improves air quality'],
   'sidewalk': ['Absorbs all stormwater that falls on it'],
-  'lot': ['Absorbs all stormwater that falls on it', 'Nice area for community'],
-  'alley': ['Absorbs all stormwater that falls on it', 'Nice area for community']
+  'lot': ['Absorbs all stormwater that falls on it', 'Improves air quality', 'Nice area for community'],
+  'alley': ['Absorbs all stormwater that falls on it', 'Improves air quality', 'Nice area for community'],
+  'plot of grass': ['Absorbs all stormwater that falls on it']
 }
 
 export let greenDisadvantages = {
   'roof': ['Expensive', 'Residents have to move out while green roof is added'],
   'sidewalk': ['Expensive', "Pedestrians can't walk on this sidewalk while it's being replaced"],
   'lot': ["Takes away parking space from the block's residents"],
-  'alley': ['Rmoves a path from the street to the lot']
+  'alley': ['Rmoves a path from the street to the lot'],
+  'plot of grass': []
 }
 
 export let cityBlockSqFt = 100000
@@ -70,16 +72,15 @@ export function cost(sqft, blocktype) {
   return greenUnitCosts[blocktype] * sqft;
 }
 
-// TODO: realistic budgets
 export function budget(difficulty) {
   if (difficulty === 'easy') {
-    return 100000;
-  }
-  else if (difficulty === 'medium') {
     return 50000;
   }
-  else {
+  else if (difficulty === 'medium') {
     return 25000;
+  }
+  else {
+    return 15000;
   }
 }
 
