@@ -85,8 +85,7 @@ class Game extends React.Component {
           <div class="col-sm-1"></div>
         </div>
         <div class="row">
-          <div class="col-sm-1"></div>
-          <div class="col-sm-10">
+          <div class="col center-content margin-left-right-20">
             {
               difficulty
               ?
@@ -98,7 +97,6 @@ class Game extends React.Component {
                 null
             }
           </div>
-          <div class="col-sm-1"></div>
         </div>
       </div>
     );

@@ -1,5 +1,4 @@
 import React from 'react';
-import * as Scroll from 'react-scroll';
 import Popup from 'reactjs-popup';
 import Block from './Block';
 import {
@@ -278,49 +277,45 @@ class Board extends React.Component {
             {rows}
           </div>
           {/* Toolbar */}
-          <div class="col-sm-3 light-green">
-            <Scroll.Element style={{height: this.props.height, overflow: 'scroll'}}>
+          <div class="col-sm-3 light-green center-content" style={{overflowY: 'scroll'}}>
+            <div class="row margin-left-right-5 center-content">
               <div class="margin-top-btm-10 margin-left-right-5">
-                <Scroll.Element class="margin-top-btm-5">
-                  <div class="row">
-                    <div class="col center-text">
-                      {
-                        !selected
-                        ?
-                          'Select a rectangle from the city block!'
-                        :
-                          'You have selected a ' + selectedName
-                      }
-                    </div>
-                  </div>
-                </Scroll.Element>
-                <Scroll.Element class="margin-top-btm-5">
-                  <div class="row">
-                    <div class="col-sm-4"></div>
-                    <div class="col-sm-4">
+                <div class="row margin-top-btm-5 center-content center-text">
+                  <div class="col center-text">
                     {
-                      selected
+                      !selected
                       ?
-                        <Block height={blockheight / 2}
-                               isGreen={selectedIsGreen}
-                               grayColor={blockColors[selected[0]].grayColor}
-                               greenColor={blockColors[selected[0]].greenColor}/>
+                        'Select a rectangle from the city block!'
                       :
-                        null
+                        'You have selected a ' + selectedName
                     }
-                    </div>
-                    <div class="col-sm-4"></div>
                   </div>
-                </Scroll.Element>
-                <Scroll.Element class="margin-top-btm-5">
-                  <div class="row">
+                </div>
+                <div class="row margin-top-btm-5">
+                  <div class="col-sm-4"></div>
+                  <div class="col-sm-4">
+                  {
+                    selected
+                    ?
+                      <Block height={blockheight / 2}
+                             isGreen={selectedIsGreen}
+                             grayColor={blockColors[selected[0]].grayColor}
+                             greenColor={blockColors[selected[0]].greenColor}/>
+                    :
+                      null
+                  }
+                  </div>
+                  <div class="col-sm-4"></div>
+                </div>
+                <div class="row margin-top-btm-5 center-content">
+                  <div class="row center-content center-text">
                     <div class="col center-text">
                       {
                         selected
                         ?
                           selectedAlternative
                           ?
-                            'These are your options for a ' + selectedName + ':'
+                            null
                           :
                             "Your selection already absorbs stormwater, so there's no need to change it!"
                         :
@@ -328,8 +323,8 @@ class Board extends React.Component {
                       }
                     </div>
                   </div>
-                </Scroll.Element>
-                <Scroll.Element class="margin-top-btm-5">
+                </div>
+                <div class="row margin-top-btm-5">
                 {
                   selected && selectedAlternative
                   ?
@@ -416,52 +411,49 @@ class Board extends React.Component {
                   :
                     null
                 }
-                </Scroll.Element>
-                <Scroll.Element>
-                  <div class="row center-content">
-                    <button type="button"
-                            class="btn btn-dark btn-sm margin-left-right-20 margin-top-btm-5"
-                            onClick={() => this.reset()}>
-                      Reset city block
-                    </button>
-                  </div>
-                </Scroll.Element>
+                </div>
+                <div class="row center-content">
+                  <button type="button"
+                          class="btn btn-dark btn-sm margin-left-right-20 margin-top-btm-5"
+                          onClick={() => this.reset()}>
+                    Reset city block
+                  </button>
+                </div>
               </div>
-            </Scroll.Element>
+            </div>
           </div>
         </div>
         <div class="row center-content margin-left-right-5 margin-top-btm-5">
-              <Popup trigger={<button type="button" class="btn btn-success centered">
-                                Finish and get your results!
-                              </button>}
-                     onClose={() => this.reset()}
-                     modal
-                     closeOnDocumentClick>
-                { close => (
-                  <div class="center-content center-text margin-left-right-5 margin-top-btm-5">
-                    <h3>Your Score: {potentialResult.finalScore}%</h3>
-                    <h5 style={{color: "green"}}>
-                      Stormwater Absorbed: {Math.round(100 * absorbedStormwater)}%
+          <Popup trigger={<button type="button" class="btn btn-success centered">
+                            Finish and get your results!
+                          </button>}
+                  modal
+                  closeOnDocumentClick>
+            { close => (
+              <div class="center-content center-text margin-left-right-5 margin-top-btm-5">
+                <h3>Your Score: {potentialResult.finalScore}%</h3>
+                <h5 style={{color: "green"}}>
+                  Stormwater Absorbed: {Math.round(100 * absorbedStormwater)}%
+                </h5>
+                {
+                  Array.from(potentialResult.pointAdjustments).map(([key,value]) =>
+                    <h5 style={{color: value > 0 ? "green" : "red"}}>
+                      {key}: {value}%
                     </h5>
-                    {
-                      Array.from(potentialResult.pointAdjustments).map(([key,value]) =>
-                        <h5 style={{color: value > 0 ? "green" : "red"}}>
-                          {key}: {value}%
-                        </h5>
-                      )
-                    }
-                    <div class="row margin-top-btm-5 margin-left-right-5">
-                      <div class="col center-content">
-                        <button type="button" 
-                                class="btn btn-dark centered"
-                                onClick={() => close()}>
-                          Try Again
-                        </button>
-                      </div>
-                    </div>
+                  )
+                }
+                <div class="row margin-top-btm-5 margin-left-right-5">
+                  <div class="col center-content">
+                    <button type="button" 
+                            class="btn btn-dark centered"
+                            onClick={() => close}>
+                      Try Again
+                    </button>
                   </div>
-                )}
-              </Popup>
+                </div>
+              </div>
+            )}
+          </Popup>
         </div>
       </div>
     );

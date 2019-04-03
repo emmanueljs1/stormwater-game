@@ -55,7 +55,7 @@ export let greenDisadvantages = {
   'roof': ['Expensive', 'Residents have to move out while green roof is added'],
   'sidewalk': ['Expensive', "Pedestrians can't walk on this sidewalk while it's being replaced"],
   'lot': ["Takes away parking space from the block's residents"],
-  'alley': ['Rmoves a path from the street to the lot'],
+  'alley': ['Removes a path from the street to the lot'],
   'plot of grass': []
 }
 

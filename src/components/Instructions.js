@@ -1,18 +1,14 @@
 import React from 'react';
-import * as Scroll from 'react-scroll';
-import { isMobile, MobileView } from 'react-device-detect';
 
 class Instructions extends React.Component {
   render() {
-    let infoHeight = isMobile ? '100px' : null;
-
     return (
-      <div class='margin-left-right-20'>
+      <div class='margin-left-right-20 margin-top-btm-5'>
         <div class="row" style={{marginBottom: '10px'}}>
           <div class="col-sm-1"></div>
           <div class="col-sm-10">
             <h4>Background</h4>
-            <Scroll.Element class="solid-border margin-top-btm-5" style={{height: infoHeight, overflow: 'scroll'}}>
+            <div class="margin-top-btm-5" style={{overflowY: 'scroll'}}>
               <p class="margin-left-right-5 margin-top-btm-0">
                 This game gives you a city block with the challenge of adding green stormwater 
                 infrastructure to it. <b>Green stormwater infrastructure (GSI)</b> is a cost-effective, 
@@ -25,9 +21,9 @@ class Instructions extends React.Component {
                 in the sewers will have nowhere to go, so it will end up going to the rivers you get
                 your drinking water from!
               </p>
-            </Scroll.Element>
+            </div>
             <h4>How to play</h4>
-            <Scroll.Element class="solid-border margin-top-btm-5" style={{height: infoHeight, overflow: 'scroll'}}>
+            <div class="margin-top-btm-5" style={{overflowY: 'scroll'}}>
               <p class="margin-left-right-5 margin-top-btm-0">
                 Select a rectangle in the city block to see the options that you have for it. For example,
                 if you select a <u>roof</u>, you have the option to switch it out for its GSI 
@@ -36,12 +32,9 @@ class Instructions extends React.Component {
                 as you can without spending more than a certain budget, depending on if you're 
                 playing on Easy, Medium, or Hard.
               </p>
-            </Scroll.Element>
+            </div>
           </div>
           <div class="col-sm-1"></div>
-        </div>
-        <div class="row margin-left-right-5 margin-top-btm-5">
-          <MobileView>Note: You can scroll in the blocks above!</MobileView>
         </div>
         {
           this.props.onClick

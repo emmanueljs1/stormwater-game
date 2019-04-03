@@ -1,5 +1,4 @@
 import React from 'react';
-import { BrowserView, MobileView } from 'react-device-detect';
 
 class ChooseDifficulty extends React.Component {
   render() {
@@ -44,28 +43,17 @@ class ChooseDifficulty extends React.Component {
           this.props.close 
           ?
             <div>
-              <BrowserView>
-                <div class="row margin-top-btm-5">
-                  <div class="col-sm-9"></div>
-                  <div class="col-sm-2">
-                    <button type="button"
-                            class="btn btn-dark"
-                            onClick={this.props.close}>
-                      Cancel
-                    </button>
-                  </div>
-                  <div class="col-sm-1"></div>
-                </div>
-              </BrowserView>
-              <MobileView>
-                <div class="row margin-top-btm-5 center-content">
+              <div class="row margin-top-btm-5">
+                <div class="col-sm-9"></div>
+                <div class="col-sm-2">
                   <button type="button"
-                          class="btn btn-dark centered"
+                          class="btn btn-dark"
                           onClick={this.props.close}>
                     Cancel
                   </button>
                 </div>
-              </MobileView>
+                <div class="col-sm-1"></div>
+              </div>
             </div>
           :
             null
