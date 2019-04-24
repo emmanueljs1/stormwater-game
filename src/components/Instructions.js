@@ -25,9 +25,9 @@ class Instructions extends React.Component {
             <h4>How to play</h4>
             <div class="margin-top-btm-5" style={{overflowY: 'scroll'}}>
               <p class="margin-left-right-5 margin-top-btm-0">
-                Select a rectangle in the city block to see the options that you have for it. For example,
-                if you select a <u>roof</u>, you have the option to switch it out for its GSI 
-                counterpart, a <u>green roof</u>.<br></br><br></br>
+                Select a tile in the city block to see the options that you have for it. For example,
+                if you select a <b>ROOF</b>, you have the option to switch it out for its GSI 
+                counterpart, a <b>GREEN ROOF</b>.<br></br><br></br>
                 The goal of the game is to change the city block to use as much green infrastructure
                 as you can without spending more than a certain budget, depending on if you're 
                 playing on Easy, Medium, or Hard.

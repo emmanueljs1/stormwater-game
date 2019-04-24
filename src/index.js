@@ -5,6 +5,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './index.css';
 
 ReactDOM.render(
-  <App height={500}/>,
+  <App height={500} width={750}/>,
   document.getElementById('root')
 );

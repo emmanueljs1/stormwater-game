@@ -3,9 +3,9 @@ export let blockColors = {
     greenColor: '#546E41',
     grayColor: '#816E5C'
   },
-  'sidewalk': {
+  'street': {
     greenColor: '#536878',
-    grayColor: '#808080'
+    grayColor: '#6f6f6f'
   },
   'lot': {
     greenColor: '#5BC236',
@@ -23,7 +23,7 @@ export let blockColors = {
 
 export let blockTypes = {
   'r': 'roof',
-  's': 'sidewalk',
+  's': 'street',
   'a': 'alley',
   'l': 'lot',
   'g': 'plot of grass'
@@ -31,21 +31,21 @@ export let blockTypes = {
 
 export let greenAlternatives = {
   'roof': 'green roof',
-  'sidewalk': 'permeable sidewalk',
+  'street': 'permeable street',
   'lot': 'rain garden',
   'alley': 'rain garden'
 }
 
 export let greenDescriptions = {
   'roof': "A green roof is a roof that's covered in vegetation",
-  'sidewalk': 'A permeable sidewalk is a sidewalk made from special materials that lets the sidewalk absorb stormwater',
+  'street': 'A permeable street is a street made from special materials that lets the street absorb stormwater',
   'lot': 'A rain garden is a garden planted with the intention of absorbing stormwater',
   'alley': 'A rain garden is a garden planted with the intention of absorbing stormwater',
 }
 
 export let greenBenefits = {
   'roof': ['Absorbs all stormwater that falls on it', 'Improves air quality'],
-  'sidewalk': ['Absorbs all stormwater that falls on it'],
+  'street': ['Absorbs all stormwater that falls on it'],
   'lot': ['Absorbs all stormwater that falls on it', 'Improves air quality', 'Nice area for community'],
   'alley': ['Absorbs all stormwater that falls on it', 'Improves air quality', 'Nice area for community'],
   'plot of grass': ['Absorbs all stormwater that falls on it']
@@ -53,17 +53,31 @@ export let greenBenefits = {
 
 export let greenDisadvantages = {
   'roof': ['Expensive', 'Residents have to move out while green roof is added'],
-  'sidewalk': ['Expensive', "Pedestrians can't walk on this sidewalk while it's being replaced"],
+  'street': ['Expensive', "Pedestrians can't walk on this street while it's being replaced"],
   'lot': ["Takes away parking space from the block's residents"],
   'alley': ['Removes a path from the street to the lot'],
   'plot of grass': []
+}
+
+export let blockImages = {
+  'street': {
+    'NW': 'nw_street.png',
+    'NE': 'ne_street.png',
+    'SW': 'sw_street.png',
+    'SE': 'se_street.png',
+    'H': 'horizontal_street.png',
+    'VE': 'vertical_E_street.png',
+    'VW': 'vertical_W_street.png'
+  },
+  'roof': 'roof.png',
+  'plot of grass': 'grass.png'
 }
 
 export let cityBlockSqFt = 100000
 
 let greenUnitCosts = {
   'roof': 25,
-  'sidewalk': 12.5,
+  'street': 12.5,
   'lot': 7.5,
   'alley': 7.5
 }
@@ -84,4 +98,4 @@ export function budget(difficulty) {
   }
 }
 
-export let blockstr = 's s s s s s s s s s s r r a r r a r r s s r r a r r a r r s s a a l l l l r r s s a a l l l l r r s s g g l l l l r r s s g g l l l l r r s s r r a r r a r r s s r r a r r a r r s s s s s s s s s s s'
+export let blockstr = 's s s s s s s s s s s r r a r r a r r s s r r a r r a r r s s g g l l l l g g s s g g l l l l g g s s g g l l l l g g s s g g l l l l g g s s r r a r r a r r s s r r a r r a r r s s s s s s s s s s s'

@@ -3,13 +3,23 @@ import React from 'react';
 class Block extends React.Component {
   render() {
     const bgColor = this.props.isGreen ? this.props.greenColor : this.props.grayColor;
-    const bordCol = this.props.isSelected ? 'red' : 'black';
+    const img = this.props.isGreen ? `green_${this.props.img}` : this.props.img;
+    const bordCol = this.props.isSelected ? 'red' : bgColor;
     const h = this.props.height;
+    const w = this.props.width;
 
     return (
-      <button class="col solid-border padding-0"
+      <button class="padding-0"
               onClick={this.props.onClick}
-              style={{backgroundColor: bgColor, borderColor: bordCol, height: h, outline: 'none'}}>
+              style={{     
+                borderColor: bordCol,
+                width: w,
+                height: h,
+                background: `${bgColor} url(images/${img}) no-repeat`,
+                backgroundSize: this.props.bgSize,
+                backgroundPosition: this.props.bgPos,
+                outline: 'none'
+              }}>
       </button>
     );
   }

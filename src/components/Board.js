@@ -3,6 +3,7 @@ import Popup from 'reactjs-popup';
 import Block from './Block';
 import {
   blockColors,
+  blockImages,
   blockstr,
   blockTypes,
   budget,
@@ -19,6 +20,7 @@ class Board extends React.Component {
     super(props);
 
     this.state = {
+      // n x m board with [blockType, isGreen, row, col, img, bgPos, width, height]
       board: this.newBoard(),
       remainingBudget: budget(this.props.difficulty),
     };
@@ -33,7 +35,57 @@ class Board extends React.Component {
 
     for (let i = 0; i < numrows; i++) {
       for (let j = 0; j < numcols; j++) {
-        board.push([blockTypes[split[numrows * i + j]], false, i, j]);
+        let imgFile = null;
+        let bgPos = 'center';
+        let blocktype = blockTypes[split[numrows * i + j]];
+        let width = `${100 * (1 / numcols)}%`;
+        let height = this.props.height / numrows;
+
+        if (blocktype === 'roof' && (i === 1 || i === 2 || i === 7 || i === 8)) {
+          width = '124px';
+        }
+
+        if (blocktype === 'alley') {
+          width = '42px'
+        }
+
+        if (blocktype === 'street') {
+          if (i === 0 && j === 0) {
+            imgFile = blockImages[blocktype]['NW'];
+            bgPos = 'right';
+          }
+          else if (i === 0 && j === numcols - 1) {
+            imgFile = blockImages[blocktype]['NE'];
+            bgPos = 'left';
+          }
+          else if (i === numrows - 1 && j === 0) {
+            imgFile = blockImages[blocktype]['SW'];
+            bgPos = 'right';
+          }
+          else if (i === numrows - 1 && j === numcols - 1) {
+            imgFile = blockImages[blocktype]['SE'];
+            bgPos = 'left';
+          }
+          else if (i === 0 || i === numrows - 1) {
+            imgFile = blockImages[blocktype]['H'];
+          }
+          else if (j === 0) {
+            imgFile = blockImages[blocktype]['VW'];
+            bgPos = 'right';
+          }
+          else if (j === numcols - 1) {
+            imgFile = blockImages[blocktype]['VE'];
+            bgPos = 'left';
+          }
+        }
+        else if (blocktype === 'roof') {
+          imgFile = blockImages[blocktype];
+        }
+        else if (blocktype === 'plot of grass') {
+          imgFile = blockImages[blocktype];
+        }
+
+        board.push([blocktype, false, i, j, imgFile, bgPos, width, height]);
       }
     }
 
@@ -48,7 +100,7 @@ class Board extends React.Component {
     });
   }
 
-  checkForPathFromSidewalkToParking() {
+  checkForPathFromStreetToParking() {
     const numrows = this.props.numrows;
     const numcols = this.props.numcols;
 
@@ -90,7 +142,7 @@ class Board extends React.Component {
         const row = i;
         const col = j;
         
-        if (blocktype === 'sidewalk') {
+        if (blocktype === 'street') {
           if (searchForParking(row, col)) {
             return true;
           }
@@ -139,7 +191,7 @@ class Board extends React.Component {
     }
 
     if (hasParkingSpace) {
-      if (!this.checkForPathFromSidewalkToParking()) {
+      if (!this.checkForPathFromStreetToParking()) {
         pointAdjustments.set("Took away all routes from the street to the parking space", -25);
       }
     }
@@ -214,7 +266,6 @@ class Board extends React.Component {
     const numcols = this.props.numcols;
     const selected = this.state.selected;
     const remainingBudget = this.state.remainingBudget;
-    const blockheight = this.props.height / numrows;
     const blockSqFt = Math.round(Math.sqrt(cityBlockSqFt) / numrows);
 
     let rows = [];
@@ -228,16 +279,24 @@ class Board extends React.Component {
         const row = i;
         const col = j;
         const isSelected = selected && selected[2] === row && selected[3] === col;
+        let imgFile = blockinfo[4];
+        let bgPos = blockinfo[5];
+        let width = blockinfo[6];
+        let height = blockinfo[7];
 
-        cols.push(<Block height={blockheight}
+        cols.push(<Block img={imgFile}
+                         bgPos={bgPos}
+                         bgSize={blocktype === 'roof' || blocktype === 'plot of grass' ? '100% auto' : null}
+                         height={height}
+                         width={width}
                          isGreen={blockinfo[1]}
                          isSelected={isSelected}
                          greenColor={blockColors[blocktype].greenColor}
                          grayColor={blockColors[blocktype].grayColor}
                          onClick={() => this.selectBlock(row, col)}/>);
 
-        if (blockinfo[1] || blockinfo[0] === 'plot of grass') {
-          absorbedStormwater += (1 / (numrows * numcols))
+        if (blockinfo[1] || blocktype === 'plot of grass') {
+          absorbedStormwater += (1 / (numrows * numcols));
         }
       }
 
@@ -273,7 +332,7 @@ class Board extends React.Component {
         </div>
         <div class="row margin-left-right-5">
           {/* City Block (Board) */}
-          <div class="col-sm-9" style={{height: this.props.height}}>
+          <div class="col" style={{height: this.props.height, width: this.props.width}}>
             {rows}
           </div>
           {/* Toolbar */}
@@ -285,27 +344,13 @@ class Board extends React.Component {
                     {
                       !selected
                       ?
-                        'Select a rectangle from the city block!'
+                        'Select a tile from the city block!'
                       :
-                        'You have selected a ' + selectedName
+                        <p style={{marginBottom: 0}}>
+                          You have selected {['a', 'e', 'i', 'o', 'u'].includes(selectedName[0]) ? 'an' : 'a' } <b>{selectedName.toUpperCase()}</b>
+                        </p>
                     }
                   </div>
-                </div>
-                <div class="row margin-top-btm-5">
-                  <div class="col-sm-4"></div>
-                  <div class="col-sm-4">
-                  {
-                    selected
-                    ?
-                      <Block height={blockheight / 2}
-                             isGreen={selectedIsGreen}
-                             grayColor={blockColors[selected[0]].grayColor}
-                             greenColor={blockColors[selected[0]].greenColor}/>
-                    :
-                      null
-                  }
-                  </div>
-                  <div class="col-sm-4"></div>
                 </div>
                 <div class="row margin-top-btm-5 center-content">
                   <div class="row center-content center-text">
@@ -446,7 +491,7 @@ class Board extends React.Component {
                   <div class="col center-content">
                     <button type="button" 
                             class="btn btn-dark centered"
-                            onClick={() => close}>
+                            onClick={() => close()}>
                       Try Again
                     </button>
                   </div>

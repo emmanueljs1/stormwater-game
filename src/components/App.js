@@ -5,7 +5,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Game height={this.props.height}/>
+        <Game height={this.props.height} width={this.props.width}/>
       </div>
     );
   }
