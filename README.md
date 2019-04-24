@@ -1,5 +1,7 @@
 # Stormwater Game
-This is an educational web game about green stormwater infrastructure (intended for middle/high schoolers)
+This is an educational web game about green stormwater infrastructure (intended for middle/high schoolers), which will be used by the environmental science fellows of the [Moelis Access Science](https://www.nettercenter.upenn.edu/what-we-do/programs/university-assisted-community-schools/moelis-access-science) program when co-developing and facilitating hands-on, inquiry-based activities, labs, and lessons for West Philadelphia students.
+
+The game can be used in any activity with the accompanying [lesson plan](todo: lesson plan link), though it can also be added in as a final activity in any green stormwater infrastructure lesson.
 
 ## Overview
 
@@ -14,4 +16,4 @@ This is an educational web game about green stormwater infrastructure (intended 
 The game is a single page React app with the different React components used in `src/components`
 
 ### Acknowledgements
-This project was developed as an ABCS final project for ENVS 410 at the University of Pennsylvania in Spring 2019
+This project was developed as a final project for ENVS 410 (an academically based comumunity service course) at the University of Pennsylvania in Spring 2019
