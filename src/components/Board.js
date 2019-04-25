@@ -24,6 +24,30 @@ class Board extends React.Component {
       board: this.newBoard(),
       remainingBudget: budget(this.props.difficulty),
     };
+
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+  }
+
+  handleKeyDown(e) {
+    e.preventDefault();
+
+    if (this.state.selected) {
+      if (e.key === 'ArrowLeft' && this.state.selected[3] > 0) {
+        this.selectBlock(this.state.selected[2], this.state.selected[3] - 1);
+      }
+      else if (e.key === 'ArrowRight' && this.state.selected[3] < this.props.numcols - 1) {
+        this.selectBlock(this.state.selected[2], this.state.selected[3] + 1);
+      }
+      else if (e.key === 'ArrowUp' && this.state.selected[2] > 0) {
+        this.selectBlock(this.state.selected[2] - 1, this.state.selected[3]);
+      }
+      else if (e.key === 'ArrowDown' && this.state.selected[2] < this.props.numcols - 1) {
+        this.selectBlock(this.state.selected[2] + 1, this.state.selected[3]);
+      }
+      else if (e.key === 'Enter') {
+        this.toggleBlock(this.state.selected[2], this.state.selected[3]);
+      }
+    }
   }
 
   newBoard() {
@@ -248,7 +272,6 @@ class Board extends React.Component {
     this.setState({
       board: newBoard,
       remainingBudget: newRemainingBudget,
-      selected: null
     });
   }
 
@@ -318,7 +341,7 @@ class Board extends React.Component {
     const potentialResult = this.calculateResult();
 
     return (
-      <div>
+      <div onKeyDown={this.handleKeyDown}>
         <div class="row margin-left-right-5 light-gray">
           <div class="col-sm-4 center-text">
             <b>Difficulty:</b> {this.props.difficulty.toUpperCase()}
