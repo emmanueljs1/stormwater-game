@@ -20,7 +20,7 @@ class Board extends React.Component {
     super(props);
 
     this.state = {
-      // n x m board with [blockType, isGreen, row, col, img, bgPos, width, height]
+      // n x m board with [blockType, isGreen, row, col, img]
       board: this.newBoard(),
       remainingBudget: budget(this.props.difficulty),
     };
@@ -60,46 +60,29 @@ class Board extends React.Component {
     for (let i = 0; i < numrows; i++) {
       for (let j = 0; j < numcols; j++) {
         let imgFile = null;
-        let bgPos = 'center';
         let blocktype = blockTypes[split[numrows * i + j]];
-        let width = `${100 * (1 / numcols)}%`;
-        let height = this.props.height / numrows;
-
-        if (blocktype === 'roof' && (i === 1 || i === 2 || i === 7 || i === 8)) {
-          width = '124px';
-        }
-
-        if (blocktype === 'alley') {
-          width = '42px'
-        }
 
         if (blocktype === 'street') {
           if (i === 0 && j === 0) {
             imgFile = blockImages[blocktype]['NW'];
-            bgPos = 'right';
           }
           else if (i === 0 && j === numcols - 1) {
             imgFile = blockImages[blocktype]['NE'];
-            bgPos = 'left';
           }
           else if (i === numrows - 1 && j === 0) {
             imgFile = blockImages[blocktype]['SW'];
-            bgPos = 'right';
           }
           else if (i === numrows - 1 && j === numcols - 1) {
             imgFile = blockImages[blocktype]['SE'];
-            bgPos = 'left';
           }
           else if (i === 0 || i === numrows - 1) {
             imgFile = blockImages[blocktype]['H'];
           }
           else if (j === 0) {
             imgFile = blockImages[blocktype]['VW'];
-            bgPos = 'right';
           }
           else if (j === numcols - 1) {
             imgFile = blockImages[blocktype]['VE'];
-            bgPos = 'left';
           }
         }
         else if (blocktype === 'roof') {
@@ -109,7 +92,7 @@ class Board extends React.Component {
           imgFile = blockImages[blocktype];
         }
 
-        board.push([blocktype, false, i, j, imgFile, bgPos, width, height]);
+        board.push([blocktype, false, i, j, imgFile]);
       }
     }
 
@@ -141,16 +124,18 @@ class Board extends React.Component {
 
       for (let i = Math.max(0, row - 1); i < Math.min(numrows, row + 2); i++) {
         for (let j = Math.max(0, col - 1); j < Math.min(numcols, col + 2); j++) {
-          if (!seen[i] || !seen[i].has(j)) {
-            const blockinfo = this.state.board[i * numrows + j];
-            const isGreen = blockinfo[1];
-            const blocktype = blockinfo[0];
+          if (i == row || j == col) {
+            if (!seen[i] || !seen[i].has(j)) {
+              const blockinfo = this.state.board[i * numrows + j];
+              const isGreen = blockinfo[1];
+              const blocktype = blockinfo[0];
 
-            if (blocktype === 'alley' && !isGreen) {
-              pathFound = pathFound || searchForParking(i, j)
-            }
-            if (blocktype === 'lot') {
-              return true;
+              if (blocktype === 'alley' && !isGreen) {
+                pathFound = pathFound || searchForParking(i, j)
+              }
+              if (blocktype === 'lot' && !isGreen) {
+                return true;
+              }
             }
           }
         }
@@ -203,15 +188,16 @@ class Board extends React.Component {
             expensiveOptionsUsed += 1;
           }
         }
-
-        if (blocktype === 'lot') {
-          hasParkingSpace = true;
+        else {
+          if (blocktype === 'lot') {
+            hasParkingSpace = true;
+          }
         }
       }
     }
 
     if (expensiveOptionsUsed > 0) {
-      pointAdjustments.set(`Used an expensive option on ${expensiveOptionsUsed} tile(s)`, -1 * expensiveOptionsUsed);
+      pointAdjustments.set(`Used an expensive option on ${expensiveOptionsUsed} tile(s)`, -0.5 * expensiveOptionsUsed);
     }
 
     if (hasParkingSpace) {
@@ -290,6 +276,7 @@ class Board extends React.Component {
     const selected = this.state.selected;
     const remainingBudget = this.state.remainingBudget;
     const blockSqFt = Math.round(Math.sqrt(cityBlockSqFt) / numrows);
+    const blockheight = this.props.height / this.props.numrows;
 
     let rows = [];
     let absorbedStormwater = 0;
@@ -303,15 +290,10 @@ class Board extends React.Component {
         const col = j;
         const isSelected = selected && selected[2] === row && selected[3] === col;
         let imgFile = blockinfo[4];
-        let bgPos = blockinfo[5];
-        let width = blockinfo[6];
-        let height = blockinfo[7];
 
         cols.push(<Block img={imgFile}
-                         bgPos={bgPos}
                          bgSize={blocktype === 'roof' || blocktype === 'plot of grass' ? '100% auto' : null}
-                         height={height}
-                         width={width}
+                         height={blockheight}
                          isGreen={blockinfo[1]}
                          isSelected={isSelected}
                          greenColor={blockColors[blocktype].greenColor}
@@ -367,7 +349,15 @@ class Board extends React.Component {
                     {
                       !selected
                       ?
-                        'Select a tile from the city block!'
+                        <p>
+                          <h4>Click on a tile from the city block!</h4>
+                          You can switch what tile is selected by using the arrow keys.<br></br>
+                          <i class="fas fa-arrow-up"></i> Select tile above<br></br>
+                          <i class="fas fa-arrow-left"></i> Select tile to the left<br></br>
+                          <i class="fas fa-arrow-down"></i> Select tile below<br></br>
+                          <i class="fas fa-arrow-right"></i> Select tile to the right<br></br><br></br>
+                          You can also change a block to its green alternative by pressing the ENTER key.
+                        </p>       
                       :
                         <p style={{marginBottom: 0}}>
                           You have selected {['a', 'e', 'i', 'o', 'u'].includes(selectedName[0]) ? 'an' : 'a' } <b>{selectedName.toUpperCase()}</b>

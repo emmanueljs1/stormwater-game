@@ -98,4 +98,4 @@ export function budget(difficulty) {
   }
 }
 
-export let blockstr = 's s s s s s s s s s s r r a r r a r r s s r r a r r a r r s s g g l l l l g g s s g g l l l l g g s s g g l l l l g g s s g g l l l l g g s s r r a r r a r r s s r r a r r a r r s s s s s s s s s s s'
+export let blockstr = 's s s s s s s s s s s r r g r r g r r s s r r g r r g r r s s a a l l l l a a s s r r l l l l r r s s r r l l l l r r s s a a l l l l a a s s r r g r r g r r s s r r g r r g r r s s s s s s s s s s s'

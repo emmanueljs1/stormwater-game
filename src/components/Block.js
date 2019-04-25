@@ -9,7 +9,7 @@ class Block extends React.Component {
     const w = this.props.width;
 
     return (
-      <button class="padding-0"
+      <button class="padding-0 col"
               onClick={this.props.onClick}
               style={{     
                 borderColor: bordCol,
@@ -17,7 +17,6 @@ class Block extends React.Component {
                 height: h,
                 background: `${bgColor} url(images/${img}) no-repeat`,
                 backgroundSize: this.props.bgSize,
-                backgroundPosition: this.props.bgPos,
                 outline: 'none'
               }}>
       </button>

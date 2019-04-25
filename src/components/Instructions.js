@@ -14,8 +14,6 @@ class Instructions extends React.Component {
                 infrastructure to it. <b>Green stormwater infrastructure (GSI)</b> is a cost-effective, 
                 resilient approach to managing wet weather impacts that provides many community 
                 benefits.<br></br><br></br>
-                In other words, GSI is a different way to build a city block that focuses on helping 
-                the city block reduce stormwater.<br></br><br></br>
                 Why does reducing stormwater matter? Reducing stormwater is important because 
                 otherwise that stormwater overflows the sewers. That means that the <i>dirty</i> water 
                 in the sewers will have nowhere to go, so it will end up going to the rivers you get
@@ -27,7 +25,7 @@ class Instructions extends React.Component {
               <p class="margin-left-right-5 margin-top-btm-0">
                 Select a tile in the city block to see the options that you have for it. For example,
                 if you select a <b>ROOF</b>, you have the option to switch it out for its GSI 
-                counterpart, a <b>GREEN ROOF</b>.<br></br><br></br>
+                counterpart, a <b>GREEN ROOF</b>.<br></br>
                 The goal of the game is to change the city block to use as much green infrastructure
                 as you can without spending more than a certain budget, depending on if you're 
                 playing on Easy, Medium, or Hard.
