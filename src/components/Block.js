@@ -15,8 +15,11 @@ class Block extends React.Component {
                 borderColor: bordCol,
                 width: w,
                 height: h,
-                background: `${bgColor} url(images/${img}) no-repeat`,
+                backgroundImage: `url(images/${img})`,
                 backgroundSize: this.props.bgSize,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: this.props.bgPos,
+                backgroundColor: bgColor,
                 outline: 'none'
               }}>
       </button>

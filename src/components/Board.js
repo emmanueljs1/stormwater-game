@@ -85,10 +85,7 @@ class Board extends React.Component {
             imgFile = blockImages[blocktype]['VE'];
           }
         }
-        else if (blocktype === 'roof') {
-          imgFile = blockImages[blocktype];
-        }
-        else if (blocktype === 'plot of grass') {
+        else {
           imgFile = blockImages[blocktype];
         }
 
@@ -124,7 +121,7 @@ class Board extends React.Component {
 
       for (let i = Math.max(0, row - 1); i < Math.min(numrows, row + 2); i++) {
         for (let j = Math.max(0, col - 1); j < Math.min(numcols, col + 2); j++) {
-          if (i == row || j == col) {
+          if (i === row || j === col) {
             if (!seen[i] || !seen[i].has(j)) {
               const blockinfo = this.state.board[i * numrows + j];
               const isGreen = blockinfo[1];
@@ -286,13 +283,15 @@ class Board extends React.Component {
       for (let j = 0; j < numcols; j++) {
         const blockinfo = this.state.board[i * numrows + j];
         const blocktype = blockinfo[0];
+        const bgSize = blocktype === 'roof' ? '100% auto' : null;
         const row = i;
         const col = j;
         const isSelected = selected && selected[2] === row && selected[3] === col;
         let imgFile = blockinfo[4];
 
         cols.push(<Block img={imgFile}
-                         bgSize={blocktype === 'roof' || blocktype === 'plot of grass' ? '100% auto' : null}
+                         bgSize={bgSize}
+                         bgPos={j === 0 ? 'right' : null}
                          height={blockheight}
                          isGreen={blockinfo[1]}
                          isSelected={isSelected}

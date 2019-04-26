@@ -8,12 +8,12 @@ export let blockColors = {
     grayColor: '#6f6f6f'
   },
   'lot': {
-    greenColor: '#5BC236',
-    grayColor: '#505050'
+    greenColor: 'green',
+    grayColor: '#354048'
   },
   'alley': {
-    greenColor: '#5BC236',
-    grayColor: '#505050'
+    greenColor: 'green',
+    grayColor: '#354048'
   },
   'plot of grass': {
     greenColor: 'green',
@@ -70,7 +70,9 @@ export let blockImages = {
     'VW': 'vertical_W_street.png'
   },
   'roof': 'roof.png',
-  'plot of grass': 'grass.png'
+  'plot of grass': 'grass.png',
+  'lot': 'lot.png',
+  'alley': 'lot.png'
 }
 
 export let cityBlockSqFt = 100000
